@@ -15,7 +15,7 @@ class MemberTest {
     void create_member_status_equal_PEDNING_and_role_equals_USER() {
         // given
         MemberCreate memberCreate = MemberCreate.builder()
-                .loginId("slee")
+                .loginId("slee@naver.com")
                 .password("a123456")
                 .nickname("lee")
                 .build();
@@ -25,7 +25,7 @@ class MemberTest {
         Member member = Member.create(memberCreate, certificationCode);
 
         // then
-        assertThat(member.getLoginId()).isEqualTo("slee");
+        assertThat(member.getLoginId()).isEqualTo("slee@naver.com");
         assertThat(member.getRole()).isEqualTo(UserRole.USER);
         assertThat(member.getStatus()).isEqualTo(MemberStatus.PENDING);
         assertThat(member.getCertificationCode()).isEqualTo("aaaa-aaaa-aaaa");
@@ -37,7 +37,7 @@ class MemberTest {
         // given
         Member member = Member.builder()
                 .id(1L)
-                .loginId("slee")
+                .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")
                 .certificationCode("aaaa-aaaa-aaaa")
@@ -57,7 +57,7 @@ class MemberTest {
         // given
         Member member = Member.builder()
                 .id(1L)
-                .loginId("slee")
+                .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")
                 .certificationCode("aaaa-aaaa-aaaa")
