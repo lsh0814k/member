@@ -3,6 +3,7 @@ package fem.mock;
 import fem.member.application.port.MemberRepository;
 import fem.member.domain.Member;
 import fem.member.domain.exception.ResourceNotFoundException;
+import fem.member.domain.vo.MemberStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,15 @@ public class FakeMemberRepository implements MemberRepository {
     public Member getById(Long id) {
         return datas.stream()
                 .filter(item -> Objects.equals(item.getId(), id))
+                .findAny()
+                .orElseThrow(() -> new ResourceNotFoundException("Member", id));
+    }
+
+    @Override
+    public Member getByIdAndStatus(Long id, MemberStatus status) {
+        return datas.stream()
+                .filter(item -> Objects.equals(item.getId(), id))
+                .filter(item -> item.getStatus() == MemberStatus.PENDING)
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("Member", id));
     }
