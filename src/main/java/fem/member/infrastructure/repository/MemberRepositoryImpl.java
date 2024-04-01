@@ -2,8 +2,8 @@ package fem.member.infrastructure.repository;
 
 import fem.member.application.port.MemberRepository;
 import fem.member.domain.Member;
-import fem.member.domain.exception.ResourceExistException;
 import fem.member.domain.exception.ResourceNotFoundException;
+import fem.member.domain.vo.MemberStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -29,5 +29,9 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberJpaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Member", id));
     }
 
-
+    @Override
+    public Member getByIdAndStatus(Long id, MemberStatus status) {
+        return memberJpaRepository.findByIdAndStatus(id, status)
+                .orElseThrow(() -> new ResourceNotFoundException("Member", id));
+    }
 }

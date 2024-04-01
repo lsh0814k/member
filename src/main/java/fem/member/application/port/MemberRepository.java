@@ -1,6 +1,7 @@
 package fem.member.application.port;
 
 import fem.member.domain.Member;
+import fem.member.domain.vo.MemberStatus;
 
 import java.util.Optional;
 
@@ -11,4 +12,6 @@ public interface MemberRepository {
     Optional<Member> findByLoginId(String loginId);
 
     Member getById(Long id);
+
+    Member getByIdAndStatus(Long id, MemberStatus status);
 }
