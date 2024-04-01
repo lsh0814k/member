@@ -20,7 +20,8 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> {
                     authorizeRequests.requestMatchers("/api/members").permitAll()
-                    .anyRequest().authenticated();
+                            .requestMatchers("/api/members/**/verify/**").permitAll()
+                            .anyRequest().authenticated();
                 });
 
         return http.build();
