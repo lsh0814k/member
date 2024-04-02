@@ -25,7 +25,6 @@ public class SignupRequest {
         return MemberCreate.builder()
                 .loginId(loginId)
                 .password(password)
-                .password(passwordConf)
                 .nickname(nickname)
                 .build();
     }
