@@ -6,6 +6,8 @@ import fem.member.domain.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
@@ -18,17 +20,17 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
     }
 
     @Override
-    public boolean existsByToken(String token) {
-        return repository.existsByToken(token);
-    }
-
-    @Override
-    public void deleteByToken(String token) {
-        repository.deleteByToken(token);
-    }
-
-    @Override
     public RefreshToken save(RefreshToken token) {
         return repository.save(token);
+    }
+
+    @Override
+    public void deleteByLoginId(String loginId) {
+        repository.deleteByLoginId(loginId);
+    }
+
+    @Override
+    public List<RefreshToken> findAllByLoginId(String loginId) {
+        return repository.findAllByLoginId(loginId);
     }
 }
