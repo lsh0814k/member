@@ -82,7 +82,7 @@ public class JwtService {
                     .verify(token);
             return true;
         } catch (TokenExpiredException e) {
-            throw new AuthorizationServiceException(JwtErrorMessage.JWT_REFRESH_IS_EXPIRED.getMessage());
+            throw new TokenExpiredException(JwtErrorMessage.JWT_REFRESH_IS_EXPIRED.getMessage());
         } catch (Exception e) {
             throw new AuthorizationServiceException(JwtErrorMessage.JWT_REFRESH_IS_NOT_VALID.getMessage());
         }
@@ -95,7 +95,7 @@ public class JwtService {
                     .verify(accessToken);
             return true;
         } catch (TokenExpiredException e) {
-            throw new AuthorizationServiceException(JwtErrorMessage.JWT_ACCESS_IS_EXPIRED.getMessage());
+            throw new TokenExpiredException(JwtErrorMessage.JWT_ACCESS_IS_EXPIRED.getMessage());
         } catch (Exception e) {
             throw new AuthorizationServiceException(JwtErrorMessage.JWT_ACCESS_IS_NOT_VALID.getMessage());
         }
