@@ -28,10 +28,10 @@ public class Member {
     @Enumerated(STRING)
     private MemberStatus status;
 
-    public static Member create(MemberCreate memberCreate, String certificationCode) {
+    public static Member create(MemberCreate memberCreate, String encodePassword, String certificationCode) {
         return Member.builder()
                 .loginId(memberCreate.getLoginId())
-                .password(memberCreate.getPassword())
+                .password(encodePassword)
                 .nickname(memberCreate.getNickname())
                 .certificationCode(certificationCode)
                 .role(UserRole.USER)

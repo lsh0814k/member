@@ -6,6 +6,7 @@ import fem.member.application.port.MemberRepository;
 import fem.member.domain.Member;
 import fem.member.domain.MemberCreate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +17,13 @@ public class SignupService {
     private final MemberRepository memberRepository;
     private final UuidHolder uuidHolder;
     private final CertificationService certificationService;
+    private final PasswordEncoder passwordEncoder;
     public Member signup(MemberCreate memberCreate) {
         if (memberRepository.findByLoginId(memberCreate.getLoginId()).isPresent()) {
             throw new ResourceExistException("Member", memberCreate.getLoginId());
         }
 
-        Member member = Member.create(memberCreate, uuidHolder.random());
+        Member member = Member.create(memberCreate, passwordEncoder.encode(memberCreate.getPassword()), uuidHolder.random());
         member = memberRepository.save(member);
 
         certificationService.send(member.getLoginId(), member.getId(), member.getCertificationCode());
