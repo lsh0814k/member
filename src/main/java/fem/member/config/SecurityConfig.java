@@ -1,4 +1,4 @@
-package fem.member.security.config;
+package fem.member.config;
 
 import fem.member.application.JwtService;
 import fem.member.application.jwt.JwtProperties;
