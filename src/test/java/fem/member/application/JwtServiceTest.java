@@ -22,9 +22,9 @@ import org.springframework.security.access.AuthorizationServiceException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class JwtServiceTest {
     private MemberRepository memberRepository;
@@ -302,5 +302,44 @@ class JwtServiceTest {
                 .isInstanceOf(AuthorizationServiceException.class)
                 .hasMessage(JwtErrorMessage.JWT_ACCESS_IS_NOT_VALID.getMessage());
 
+    }
+
+    @Test
+    @DisplayName("loginId와 token을 이용해 refresh token 을 저장할 수 있다.")
+    void save_refreshToken_by_loginId_and_token() {
+        // given
+        JwtProperties properties = StubJwtProperties.create();
+        Instant instant = ZonedDateTime.now()
+                .toInstant()
+                .plusMillis(properties.getRefreshTokenExpTime());
+        String token = jwtService.createRefreshToken(properties.getKey(), instant);
+
+        // when
+        RefreshToken refreshToken = jwtService.addRefreshToken("slee@naver.com", token, instant);
+
+        // then
+        assertThat(refreshToken.getLoginId()).isEqualTo("slee@naver.com");
+    }
+
+    @Test
+    @DisplayName("refresh token 이 저장 될 때 동일한 userId의 refresh token 은 모두 삭제 된 후 저장 된다.")
+    void save_only_one_refreshToken() {
+        // given
+        refreshTokenRepository.save(RefreshToken.builder()
+                        .token("aaaaa")
+                        .expiration(LocalDateTime.now())
+                        .loginId("slee@naver.com").build());
+        JwtProperties properties = StubJwtProperties.create();
+        Instant instant = ZonedDateTime.now()
+                .toInstant()
+                .plusMillis(properties.getRefreshTokenExpTime());
+        String token = jwtService.createRefreshToken(properties.getKey(), instant);
+
+        // when
+        jwtService.addRefreshToken("slee@naver.com", token, instant);
+        List<RefreshToken> result = refreshTokenRepository.findAllByLoginId("slee@naver.com");
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
     }
 }
