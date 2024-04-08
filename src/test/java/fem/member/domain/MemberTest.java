@@ -5,11 +5,14 @@ import fem.member.domain.vo.UserRole;
 import fem.member.domain.vo.MemberStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MemberTest {
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Test
     @DisplayName("MemberCreate 를 이용하여 Member 를 생성할 수 있으며 유저 상태는 PENDING 상태이며 유저의 권한은 USER 이다.")
     void create_member_status_equal_PEDNING_and_role_equals_USER() {
@@ -22,7 +25,7 @@ class MemberTest {
         String certificationCode = "aaaa-aaaa-aaaa";
 
         // when
-        Member member = Member.create(memberCreate, certificationCode);
+        Member member = Member.create(memberCreate, passwordEncoder.encode("a123456"), certificationCode);
 
         // then
         assertThat(member.getLoginId()).isEqualTo("slee@naver.com");

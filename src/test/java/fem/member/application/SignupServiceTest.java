@@ -11,6 +11,8 @@ import fem.mock.FakeUuidHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -18,13 +20,15 @@ class SignupServiceTest {
     private SignupService memberService;
     private MemberRepository memberRepository;
     private UuidHolder uuidHolder;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void init() {
         this.memberRepository = new FakeMemberRepository();
         this.uuidHolder = new FakeUuidHolder("aaaa-aaaa-aaaa");
         CertificationService certificationService = new CertificationService(new FakeMailSender(), "localhost:8080");
-        memberService = new SignupService(memberRepository, uuidHolder, certificationService);
+        passwordEncoder = new BCryptPasswordEncoder();
+        memberService = new SignupService(memberRepository, uuidHolder, certificationService, passwordEncoder);
     }
 
     @Test
@@ -45,6 +49,7 @@ class SignupServiceTest {
         assertThat(result.getLoginId()).isEqualTo("slee");
         assertThat(result.getNickname()).isEqualTo("lee");
         assertThat(result.getCertificationCode()).isEqualTo("aaaa-aaaa-aaaa");
+        assertThat(passwordEncoder.matches("a123456", result.getPassword())).isTrue();
     }
 
     @Test
@@ -56,7 +61,7 @@ class SignupServiceTest {
                 .password("a123456")
                 .nickname("lee")
                 .build();
-        Member member = Member.create(memberCreate, uuidHolder.random());
+        Member member = Member.create(memberCreate, passwordEncoder.encode("a123456"), uuidHolder.random());
         memberRepository.save(member);
 
         // expected
