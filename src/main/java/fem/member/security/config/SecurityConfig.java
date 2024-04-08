@@ -1,31 +1,56 @@
 package fem.member.security.config;
 
+import fem.member.application.JwtService;
+import fem.member.application.jwt.JwtProperties;
+import fem.member.infrastructure.filter.JwtAuthenticationFilter;
+import fem.member.infrastructure.filter.JwtAuthorizationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtService jwtService;
+    private final JwtProperties jwtProperties;
+    private final AuthenticationConfiguration authenticationConfiguration;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagement ->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sessionManagement ->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
                 .authorizeHttpRequests(authorizeRequests -> {
-                    authorizeRequests.requestMatchers("/api/members").permitAll()
-                            .requestMatchers("/api/members/**/verify/**").permitAll()
-                            .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
-                            .anyRequest().authenticated();
+                    authorizeRequests.requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
+                                    "/api/members", "/api/members/**/verify/**", "/api/re-issue")
+                            .permitAll().anyRequest().authenticated();
                 });
+        http
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtProperties, jwtService))
+                .addFilterBefore(new JwtAuthorizationFilter(jwtProperties, jwtService), JwtAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
