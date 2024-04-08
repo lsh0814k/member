@@ -47,9 +47,12 @@ public class JwtService {
         return token != null && token.startsWith(prefix);
     }
 
-    public void addRefreshToken(String loginId, String token, Instant expire) {
+    public RefreshToken addRefreshToken(String loginId, String token, Instant expire) {
         RefreshToken refreshToken = RefreshToken.create(loginId, token, LocalDateTime.ofInstant(expire, ZonedDateTime.now().getZone()));
+        refreshTokenRepository.deleteByLoginId(loginId);
         refreshTokenRepository.save(refreshToken);
+
+        return refreshToken;
     }
 
     @Transactional(readOnly = true)
