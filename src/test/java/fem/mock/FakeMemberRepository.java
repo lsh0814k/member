@@ -58,4 +58,13 @@ public class FakeMemberRepository implements MemberRepository {
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("Member", id));
     }
+
+    @Override
+    public Member getByLoginIdAndStatus(String loginId) {
+        return datas.stream()
+                .filter(item -> Objects.equals(item.getLoginId(), loginId))
+                .filter(item -> item.getStatus() == MemberStatus.ACTIVE)
+                .findAny()
+                .orElseThrow(() -> new ResourceNotFoundException("Member", loginId));
+    }
 }

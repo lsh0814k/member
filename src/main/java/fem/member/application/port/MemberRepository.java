@@ -14,4 +14,6 @@ public interface MemberRepository {
     Member getById(Long id);
 
     Member getByIdAndStatus(Long id, MemberStatus status);
+
+    Member getByLoginIdAndStatus(String loginId);
 }

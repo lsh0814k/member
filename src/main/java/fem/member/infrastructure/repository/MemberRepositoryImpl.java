@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static fem.member.domain.vo.MemberStatus.*;
+
 @Repository
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepository {
@@ -33,5 +35,11 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Member getByIdAndStatus(Long id, MemberStatus status) {
         return memberJpaRepository.findByIdAndStatus(id, status)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", id));
+    }
+
+    @Override
+    public Member getByLoginIdAndStatus(String loginId) {
+        return memberJpaRepository.findByLoginIdAndStatus(loginId, ACTIVE)
+                .orElseThrow(() -> new ResourceNotFoundException("Member", loginId));
     }
 }
