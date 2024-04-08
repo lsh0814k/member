@@ -47,6 +47,10 @@ public class JwtService {
         return token != null && token.startsWith(prefix);
     }
 
+    public void deleteRefreshToken(String refreshToken) {
+        refreshTokenRepository.deleteByToken(refreshToken);
+    }
+
     public RefreshToken addRefreshToken(String loginId, String token, Instant expire) {
         RefreshToken refreshToken = RefreshToken.create(loginId, token, LocalDateTime.ofInstant(expire, ZonedDateTime.now().getZone()));
         refreshTokenRepository.deleteByLoginId(loginId);

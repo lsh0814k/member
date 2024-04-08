@@ -10,4 +10,6 @@ public interface RefreshTokenRepository {
     void deleteByLoginId(String loginId);
 
     List<RefreshToken> findAllByLoginId(String loginId);
+
+    void deleteByToken(String refreshToken);
 }

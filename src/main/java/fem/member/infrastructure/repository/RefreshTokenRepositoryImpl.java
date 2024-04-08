@@ -33,4 +33,9 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
     public List<RefreshToken> findAllByLoginId(String loginId) {
         return repository.findAllByLoginId(loginId);
     }
+
+    @Override
+    public void deleteByToken(String refreshToken) {
+        repository.deleteByToken(refreshToken);
+    }
 }

@@ -52,4 +52,9 @@ public class FakeRefreshTokenRepository implements RefreshTokenRepository {
         return datas.stream().filter(item -> Objects.equals(item.getLoginId(), loginId))
                 .toList();
     }
+
+    @Override
+    public void deleteByToken(String refreshToken) {
+        datas.removeIf(item -> Objects.equals(item.getToken(), refreshToken));
+    }
 }
