@@ -4,6 +4,7 @@ import fem.member.application.JwtService;
 import fem.member.application.jwt.JwtProperties;
 import fem.member.infrastructure.filter.JwtAuthenticationFilter;
 import fem.member.infrastructure.filter.JwtAuthorizationFilter;
+import fem.member.infrastructure.filter.JwtLogoutFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -31,6 +33,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement ->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         http
                 .authorizeHttpRequests(authorizeRequests -> {
                     authorizeRequests.requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
@@ -39,7 +42,8 @@ public class SecurityConfig {
                 });
         http
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtProperties, jwtService))
-                .addFilterBefore(new JwtAuthorizationFilter(jwtProperties, jwtService), JwtAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthorizationFilter(jwtProperties, jwtService), JwtAuthenticationFilter.class)
+                .addFilterBefore(new JwtLogoutFilter(jwtProperties, jwtService), LogoutFilter.class);
 
         return http.build();
     }
