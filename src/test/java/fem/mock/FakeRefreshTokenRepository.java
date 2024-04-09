@@ -28,19 +28,6 @@ public class FakeRefreshTokenRepository implements RefreshTokenRepository {
     }
 
     @Override
-    public void deleteByLoginId(String loginId) {
-        List<RefreshToken> removeList = datas.stream().filter(item -> Objects.equals(item.getLoginId(), loginId))
-                .toList();
-        datas.removeAll(removeList);
-    }
-
-    @Override
-    public List<RefreshToken> findAllByLoginId(String loginId) {
-        return datas.stream().filter(item -> Objects.equals(item.getLoginId(), loginId))
-                .toList();
-    }
-
-    @Override
     public void deleteByToken(String refreshToken) {
         datas.removeIf(item -> Objects.equals(item.getToken(), refreshToken));
     }
