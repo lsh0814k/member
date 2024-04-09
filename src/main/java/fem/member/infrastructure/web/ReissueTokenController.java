@@ -40,6 +40,9 @@ public class ReissueTokenController {
             String newRefreshToken = jwtService.createRefreshToken(jwtProperties.getKey(),
                     now.toInstant().plusMillis(jwtProperties.getRefreshTokenExpTime()));
 
+            jwtService.deleteRefreshToken(refreshToken);
+
+
             jwtService.addRefreshToken(memberInfo.getLoginId(), newRefreshToken, now.toInstant().plusMillis(jwtProperties.getRefreshTokenExpTime()));
             response.addHeader(jwtProperties.getRefreshHeaderPrefix(), newRefreshToken);
             response.addHeader(jwtProperties.getHeaderPrefix(), jwtProperties.getTokenPrefix() + accessToken);
