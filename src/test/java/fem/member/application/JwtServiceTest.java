@@ -1,6 +1,7 @@
 package fem.member.application;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import fem.member.application.jwt.JwtErrorMessage;
 import fem.member.application.jwt.JwtProperties;
 import fem.member.application.port.MemberRepository;
@@ -20,11 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AuthorizationServiceException;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtServiceTest {
     private MemberRepository memberRepository;
@@ -107,7 +107,7 @@ class JwtServiceTest {
                 .build();
         memberRepository.save(member);
         String token = "1q2w3e4r";
-        refreshTokenRepository.save(RefreshToken.create("slee@naver.com", token, LocalDateTime.now()));
+        refreshTokenRepository.save(RefreshToken.create("slee@naver.com", token, ZonedDateTime.now().toInstant().toEpochMilli()));
 
         // when
         MemberInfo result = jwtService.getMemberInfoByRefreshToken(token);
@@ -196,7 +196,7 @@ class JwtServiceTest {
     }
 
     @Test
-    @DisplayName("access token 이 만료 되었으면 AuthorizationServiceException 이 발생한다.")
+    @DisplayName("access token 이 만료 되었으면 TokenExpiredException 이 발생한다.")
     void accessToken_expired() {
         // given
         Member member = Member.builder()
@@ -218,7 +218,7 @@ class JwtServiceTest {
         // when
         // then
         assertThatThrownBy(() -> jwtService.isNotExpiredAccessToken(accessToken, properties.getKey()))
-                .isInstanceOf(AuthorizationServiceException.class)
+                .isInstanceOf(TokenExpiredException.class)
                 .hasMessage(JwtErrorMessage.JWT_ACCESS_IS_EXPIRED.getMessage());
     }
 
@@ -269,7 +269,7 @@ class JwtServiceTest {
     }
 
     @Test
-    @DisplayName("refresh token 이 만료 되었으면 AuthorizationServiceException 이 발생한다.")
+    @DisplayName("refresh token 이 만료 되었으면 TokenExpiredException 이 발생한다.")
     void refreshToken_expired() {
         // given
         JwtProperties properties = StubJwtProperties.create();
@@ -281,7 +281,7 @@ class JwtServiceTest {
         // when
         // then
         assertThatThrownBy(() -> jwtService.isNotExpiredRefreshToken(token, properties.getKey()))
-                .isInstanceOf(AuthorizationServiceException.class)
+                .isInstanceOf(TokenExpiredException.class)
                 .hasMessage(JwtErrorMessage.JWT_REFRESH_IS_EXPIRED.getMessage());
     }
 
@@ -319,27 +319,5 @@ class JwtServiceTest {
 
         // then
         assertThat(refreshToken.getLoginId()).isEqualTo("slee@naver.com");
-    }
-
-    @Test
-    @DisplayName("refresh token 이 저장 될 때 동일한 userId의 refresh token 은 모두 삭제 된 후 저장 된다.")
-    void save_only_one_refreshToken() {
-        // given
-        refreshTokenRepository.save(RefreshToken.builder()
-                        .token("aaaaa")
-                        .expiration(LocalDateTime.now())
-                        .loginId("slee@naver.com").build());
-        JwtProperties properties = StubJwtProperties.create();
-        Instant instant = ZonedDateTime.now()
-                .toInstant()
-                .plusMillis(properties.getRefreshTokenExpTime());
-        String token = jwtService.createRefreshToken(properties.getKey(), instant);
-
-        // when
-        jwtService.addRefreshToken("slee@naver.com", token, instant);
-        List<RefreshToken> result = refreshTokenRepository.findAllByLoginId("slee@naver.com");
-
-        // then
-        assertThat(result.size()).isEqualTo(1);
     }
 }

@@ -30,7 +30,6 @@ class UserTokenServiceTest {
     void create_userDetails_by_loginId() {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")

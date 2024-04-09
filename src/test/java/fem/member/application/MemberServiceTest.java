@@ -30,7 +30,6 @@ class MemberServiceTest {
     void verify_valid_id_and_certification() {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")
@@ -64,7 +63,6 @@ class MemberServiceTest {
         // given
         // when
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")
@@ -85,7 +83,6 @@ class MemberServiceTest {
         // given
         // when
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")

@@ -67,4 +67,11 @@ public class FakeMemberRepository implements MemberRepository {
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("Member", loginId));
     }
+
+    @Override
+    public void deleteAll() {
+        for (Member data : datas) {
+            datas.remove(data);
+        }
+    }
 }

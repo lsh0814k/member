@@ -7,6 +7,7 @@ import fem.member.domain.Member;
 import fem.member.domain.vo.MemberStatus;
 import fem.member.domain.vo.UserRole;
 import fem.member.infrastructure.web.request.SignupRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,11 +27,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class SignupControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private MemberRepository memberRepository;
     @MockBean private MailSender mailSender;
+
+    @BeforeEach
+    void init() {
+        memberRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("사용자는 회원 가입을 할 수 있다")
@@ -108,7 +116,6 @@ class SignupControllerTest {
     void same_loginId_exception() throws Exception{
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")

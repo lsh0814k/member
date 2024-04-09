@@ -6,11 +6,13 @@ import fem.member.application.port.MemberRepository;
 import fem.member.domain.Member;
 import fem.member.domain.vo.MemberStatus;
 import fem.member.domain.vo.UserRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class ReissueTokenControllerTest {
 
     @Autowired private MockMvc mockMvc;
@@ -31,12 +34,16 @@ class ReissueTokenControllerTest {
     @Autowired private JwtProperties jwtProperties;
     @Autowired private MemberRepository memberRepository;
 
+    @BeforeEach
+    void init() {
+        memberRepository.deleteAll();
+    }
+
     @Test
     @DisplayName("refresh token 을 이용하여 access token 을 재발급 받을 수 있다.")
     void reissue_accessToken_by_refreshToken() throws Exception {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")
@@ -68,7 +75,6 @@ class ReissueTokenControllerTest {
     void wrong_refreshToken() throws Exception {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")
@@ -98,7 +104,6 @@ class ReissueTokenControllerTest {
     void expired_refreshToken() throws Exception {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password("a123456")

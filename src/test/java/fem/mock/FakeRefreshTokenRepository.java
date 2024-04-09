@@ -10,7 +10,6 @@ import java.util.Objects;
 
 public class FakeRefreshTokenRepository implements RefreshTokenRepository {
     private final List<RefreshToken> datas = new ArrayList<>();
-    private Long generatedValue = 1L;
 
     @Override
     public RefreshToken getByToken(String token) {
@@ -22,22 +21,10 @@ public class FakeRefreshTokenRepository implements RefreshTokenRepository {
 
     @Override
     public RefreshToken save(RefreshToken token) {
-        if (token.getId() == null) {
-            RefreshToken newToken = RefreshToken.builder()
-                    .id(generatedValue++)
-                    .loginId(token.getLoginId())
-                    .token(token.getToken())
-                    .expiration(token.getExpiration())
-                    .build();
-            datas.add(newToken);
+        datas.removeIf(item -> Objects.equals(item.getToken(), token.getToken()));
+        datas.add(token);
 
-            return newToken;
-        } else {
-            datas.removeIf(item -> Objects.equals(item.getId(), token.getId()));
-            datas.add(token);
-
-            return token;
-        }
+        return token;
     }
 
     @Override

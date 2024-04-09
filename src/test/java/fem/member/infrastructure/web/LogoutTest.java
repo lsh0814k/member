@@ -6,12 +6,14 @@ import fem.member.application.port.MemberRepository;
 import fem.member.domain.Member;
 import fem.member.domain.vo.MemberStatus;
 import fem.member.domain.vo.UserRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class LogoutTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private JwtProperties jwtProperties;
@@ -31,12 +34,16 @@ public class LogoutTest {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private MemberRepository memberRepository;
 
+    @BeforeEach
+    void init() {
+        memberRepository.deleteAll();
+    }
+
     @Test
     @DisplayName("유효한 refresh token 으로 로그아웃을 할 수 있다.")
     void logout_for_valid_refreshToken() throws Exception {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password(passwordEncoder.encode("a123456"))
@@ -66,7 +73,6 @@ public class LogoutTest {
     void logout_for_wrong_refreshToken() throws Exception {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password(passwordEncoder.encode("a123456"))
@@ -97,7 +103,6 @@ public class LogoutTest {
     void logout_for_expired_refreshToken() throws Exception {
         // given
         Member member = Member.builder()
-                .id(1L)
                 .loginId("slee@naver.com")
                 .nickname("lee")
                 .password(passwordEncoder.encode("a123456"))

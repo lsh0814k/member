@@ -1,20 +1,31 @@
 package fem.member.application;
 
+import fem.member.application.port.MemberRepository;
 import fem.member.domain.Member;
 import fem.member.domain.vo.MemberStatus;
 import fem.member.domain.vo.UserRole;
 import fem.mock.FakeMailSender;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class CertificationServiceTest {
     private final CertificationService certificationService;
     private final FakeMailSender mailSender;
+    @Autowired private MemberRepository memberRepository;
+
+    @BeforeEach
+    void init() {
+        memberRepository.deleteAll();
+    }
 
     public CertificationServiceTest(@Value("${certification.host}") String host) {
         this.mailSender = new FakeMailSender();

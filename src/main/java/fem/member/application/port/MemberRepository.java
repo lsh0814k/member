@@ -16,4 +16,6 @@ public interface MemberRepository {
     Member getByIdAndStatus(Long id, MemberStatus status);
 
     Member getByLoginIdAndStatus(String loginId);
+
+    void deleteAll();
 }

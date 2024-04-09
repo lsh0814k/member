@@ -42,4 +42,9 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberJpaRepository.findByLoginIdAndStatus(loginId, ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", loginId));
     }
+
+    @Override
+    public void deleteAll() {
+        memberJpaRepository.deleteAll();
+    }
 }
