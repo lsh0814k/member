@@ -1,28 +1,27 @@
 package fem.member.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
-import java.time.LocalDateTime;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Builder
-@Entity
 @AllArgsConstructor
+@RedisHash(value = "refreshToken")
 @NoArgsConstructor(access = PROTECTED)
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "token")
 public class RefreshToken {
-    @Id @GeneratedValue
-    private Long id;
-    private String loginId;
+    @Id
     private String token;
-    private LocalDateTime expiration;
+    private String loginId;
+    @TimeToLive
+    private Long expiration;
 
-    public static RefreshToken create(String loginId, String token, LocalDateTime expiration) {
+    public static RefreshToken create(String loginId, String token, long expiration) {
         return RefreshToken.builder()
                 .loginId(loginId)
                 .token(token)
