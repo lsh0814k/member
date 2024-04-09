@@ -2,6 +2,7 @@ package fem.member.config;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -11,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+@Slf4j
 @Profile("test")
 @Configuration
 public class EmbeddedRedisConfig {
@@ -19,6 +21,7 @@ public class EmbeddedRedisConfig {
 
     @PostConstruct
     public void redisServer() throws IOException {
+        log.info("[EmbeddedRedisConfig] redisServer");
         int redisPort = isRedisRunning()? findAvailablePort() : port;
         redisServer = new RedisServer(redisPort);
         redisServer.start();

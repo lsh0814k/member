@@ -1,14 +1,14 @@
 package fem.member.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
-@Profile("local")
+@Slf4j
 @Configuration
 public class RedisRepositoryConfig {
     @Value("${spring.data.redis.host}")
@@ -22,6 +22,7 @@ public class RedisRepositoryConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
+        log.info("[redisRepositoryConfig] redisConnectionFactory bean 생성");
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName(host);
         configuration.setPort(Integer.parseInt(port));
